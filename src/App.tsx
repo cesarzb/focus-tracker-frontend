@@ -1,4 +1,4 @@
-import "./App.css";
+import { Link } from "react-router-dom";
 // import hourglass from "./assets/hourglass.png";
 
 function App() {
@@ -10,8 +10,12 @@ function App() {
       {/* <img src={hourglass} alt="Hourglass" /> */}
 
       <div className="flex flex-row justify-center gap-10 text-white">
-        <div className="cursor-pointer">Login</div>
-        <div className="cursor-pointer">Register</div>
+        <Link to="/login" className="cursor-pointer">
+          Login
+        </Link>
+        <Link to="/register" className="cursor-pointer">
+          Register
+        </Link>
       </div>
     </div>
   );
