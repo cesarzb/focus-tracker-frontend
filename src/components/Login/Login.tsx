@@ -17,12 +17,11 @@ const Login = () => {
           <form className="space-y-5">
             <div>
               <label className="mb-1.5 block text-sm font-medium text-stone-300">
-                Email Address
+                Username
               </label>
               <input
-                type="email"
-                id="email"
-                placeholder="name@company.com"
+                type="text"
+                placeholder="username"
                 className="w-full rounded-xl bg-stone-950 border border-stone-700/50 p-3 text-stone-50 placeholder:text-stone-600 outline-none focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10 transition-all"
               />
             </div>
@@ -35,7 +34,6 @@ const Login = () => {
               </div>
               <input
                 type="password"
-                id="password"
                 placeholder="••••••••"
                 className="w-full rounded-xl bg-stone-950 border border-stone-700/50 p-3 text-stone-50 placeholder:text-stone-600 outline-none focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10 transition-all"
               />
