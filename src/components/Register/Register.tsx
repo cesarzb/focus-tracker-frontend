@@ -1,6 +1,29 @@
 import { Link } from "react-router-dom";
+import api from "../../api/client";
+import type { RegisterDto } from "./dtos/RegisterDto";
+import { useState } from "react";
 
 const Register = () => {
+  const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const response = await api.post("/users/", formData);
+    return response.data;
+  };
+
+  const [formData, setFormData] = useState<RegisterDto>({
+    username: "",
+    password: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-stone-900 p-4 font-sans selection:bg-orange-500/30">
       <div className="w-full max-w-md">
@@ -15,12 +38,15 @@ const Register = () => {
           <form className="space-y-5">
             <div>
               <label className="mb-1.5 block text-sm font-medium text-stone-300">
-                Email Address
+                Username
               </label>
               <input
-                type="email"
-                placeholder="name@company.com"
+                type="text"
+                placeholder="username"
                 className="w-full rounded-xl bg-stone-950 border border-stone-700/50 p-3 text-stone-50 placeholder:text-stone-600 outline-none focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10 transition-all"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
               />
             </div>
 
@@ -32,10 +58,16 @@ const Register = () => {
                 type="password"
                 placeholder="••••••••"
                 className="w-full rounded-xl bg-stone-950 border border-stone-700/50 p-3 text-stone-50 placeholder:text-stone-600 outline-none focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10 transition-all"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
               />
             </div>
 
-            <button className="group relative flex w-full items-center justify-center rounded-xl bg-orange-600 py-3 px-4 text-sm font-bold text-white transition-all hover:bg-orange-500 active:scale-[0.98]">
+            <button
+              className="group relative flex w-full items-center justify-center rounded-xl bg-orange-600 py-3 px-4 text-sm font-bold text-white transition-all hover:bg-orange-500 active:scale-[0.98]"
+              onClick={(e) => handleRegister(e)}
+            >
               Register
             </button>
           </form>
