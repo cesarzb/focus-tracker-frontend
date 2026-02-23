@@ -2,10 +2,9 @@ import { Link } from "react-router-dom";
 import api from "../../api/client";
 import type { RegisterDto } from "./dtos/RegisterDto";
 import { useState } from "react";
-import type { MouseEvent } from "react";
 
 const Register = () => {
-  const handleRegister = async (e: MouseEvent<HTMLButtonElement>) => {
+  const handleRegister = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const response = await api.post("/users/", formData);
     return response.data;
@@ -67,7 +66,9 @@ const Register = () => {
 
             <button
               className="cursor-pointer group relative flex w-full items-center justify-center rounded-xl bg-orange-600 py-3 px-4 text-sm font-bold text-white transition-all hover:bg-orange-500 active:scale-[0.98]"
-              onClick={(e: MouseEvent<HTMLButtonElement>) => handleRegister(e)}
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+                handleRegister(e)
+              }
             >
               Register
             </button>
