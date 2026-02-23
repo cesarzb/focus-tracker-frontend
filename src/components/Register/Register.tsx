@@ -66,7 +66,7 @@ const Register = () => {
             </div>
 
             <button
-              className="group relative flex w-full items-center justify-center rounded-xl bg-orange-600 py-3 px-4 text-sm font-bold text-white transition-all hover:bg-orange-500 active:scale-[0.98]"
+              className="cursor-pointer group relative flex w-full items-center justify-center rounded-xl bg-orange-600 py-3 px-4 text-sm font-bold text-white transition-all hover:bg-orange-500 active:scale-[0.98]"
               onClick={(e: MouseEvent<HTMLButtonElement>) => handleRegister(e)}
             >
               Register
