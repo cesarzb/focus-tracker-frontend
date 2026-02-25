@@ -7,6 +7,7 @@ import Register from "./components/Register/Register.tsx";
 import Login from "./components/Login/Login.tsx";
 import { AuthProvider } from "./context/AuthProvider.tsx";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.tsx";
+import Dashboard from "./components/Dashboard/Dashboard.tsx";
 
 const router = createBrowserRouter([
   {
@@ -17,7 +18,7 @@ const router = createBrowserRouter([
       { path: "login", element: <Login /> },
       {
         element: <ProtectedRoute />,
-        children: [],
+        children: [{ path: "dashboard", element: <Dashboard /> }],
       },
     ],
   },
