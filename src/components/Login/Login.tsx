@@ -1,13 +1,24 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import type { LoginDto } from "./dtos/LoginDto";
 import api from "../../api/client";
+import { useAuth } from "../../hooks/useAuth";
 
 const Login = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const response = await api.post("/auth/login", formData);
-    return response.data;
+    try {
+      const response = await api.post("/auth/login", formData);
+
+      login(response.data.access_token);
+
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Login failed", err);
+    }
   };
 
   const [formData, setFormData] = useState<LoginDto>({
