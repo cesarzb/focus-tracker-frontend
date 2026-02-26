@@ -8,7 +8,8 @@ import Login from "./components/Login/Login.tsx";
 import { AuthProvider } from "./context/AuthProvider.tsx";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.tsx";
 import Dashboard from "./components/Dashboard/Dashboard.tsx";
-import Layout from "./components/Layout/Layout";
+import Layout from "./components/Layout/Layout.tsx";
+import Hourglass from "./components/Hourglass/Hourglass.tsx";
 
 const router = createBrowserRouter([
   {
@@ -22,7 +23,10 @@ const router = createBrowserRouter([
         children: [
           {
             element: <Layout />,
-            children: [{ path: "dashboard", element: <Dashboard /> }],
+            children: [
+              { path: "dashboard", element: <Dashboard /> },
+              { path: "timer", element: <Hourglass /> },
+            ],
           },
         ],
       },

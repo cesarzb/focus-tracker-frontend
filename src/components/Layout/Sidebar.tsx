@@ -1,22 +1,28 @@
 import { useState } from "react";
 import {
   LayoutDashboard,
-  Timer,
-  Settings,
-  BarChart3,
+  Hourglass,
   ChevronLeft,
   ChevronRight,
   LogOut,
 } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
+  const { pathname: currentPath } = useLocation();
   const menuItems = [
-    { icon: LayoutDashboard, label: "Dashboard", active: true },
-    { icon: Timer, label: "Focus Session", active: false },
-    { icon: BarChart3, label: "Statistics", active: false },
-    { icon: Settings, label: "Settings", active: false },
+    {
+      icon: LayoutDashboard,
+      path: "/dashboard",
+      label: "Dashboard",
+    },
+    {
+      icon: Hourglass,
+      path: "/timer",
+      label: "Focus Session",
+    },
   ];
 
   return (
@@ -40,25 +46,26 @@ const Sidebar = () => {
 
       <nav className="flex-1 px-3 space-y-1.5 mt-4">
         {menuItems.map((item) => (
-          <button
+          <Link
+            to={item.path}
             key={item.label}
             className={`w-full flex items-center p-3 rounded-xl transition-all group
               ${
-                item.active
+                item.path === currentPath
                   ? "bg-orange-600/10 text-orange-500"
                   : "hover:bg-stone-900 hover:text-stone-100"
               }`}
           >
             <item.icon
               size={22}
-              className={`${item.active ? "text-orange-500" : "text-stone-500 group-hover:text-stone-100"}`}
+              className={`${item.path === currentPath ? "text-orange-500" : "text-stone-500 group-hover:text-stone-100"}`}
             />
             {!isCollapsed && (
               <span className="ml-4 font-semibold text-sm tracking-wide">
                 {item.label}
               </span>
             )}
-          </button>
+          </Link>
         ))}
       </nav>
 
