@@ -26,7 +26,7 @@ const ActionButton = ({
       className={`
         px-6 py-3 rounded-xl font-bold tracking-wide
         transition-all duration-200 border
-        active:scale-95 flex items-center justify-center gap-2
+        active:scale-95 flex items-center justify-center gap-2 cursor-pointer
         ${variants[variant]}
         ${className}
       `}
