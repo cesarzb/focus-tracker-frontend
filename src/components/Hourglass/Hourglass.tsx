@@ -32,6 +32,10 @@ const Hourglass = () => {
     return () => clearTimeout(timer);
   }, [time, isActive]);
 
+  useEffect(() => {
+    document.title = inputValue;
+  }, [inputValue]);
+
   const handleInputChange = (val: string) => {
     setInputValue(val);
 
