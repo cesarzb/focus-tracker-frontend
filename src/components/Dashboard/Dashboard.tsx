@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../api/client";
-
-interface Session {
-  id: number;
-  name: string;
-  startTime: string;
-  endTime: string;
-}
+import type { Session } from "../../types/session";
 
 const Dashboard = () => {
   const [sessions, setSessions] = useState<Session[]>([]);

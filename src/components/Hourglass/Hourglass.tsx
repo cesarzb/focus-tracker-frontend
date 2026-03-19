@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import ActionButton from "../ui/ActionButton/ActionButton.tsx";
-
+import ActionButton from "../ui/ActionButton/ActionButton";
+import api from "../../api/client";
+import type { Session } from "../../types/session";
 const Hourglass = () => {
   const fullPomodoroLength = 25 * 60;
   const [time, setTime] = useState<number>(fullPomodoroLength);
   const [inputValue, setInputValue] = useState<string>("25:00");
   const [isActive, setIsActive] = useState<boolean>(false);
-
+  const [session, setSession] = useState<Session | undefined>();
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -42,6 +43,35 @@ const Hourglass = () => {
     if (/^\d+:\d{2}$/.test(val)) {
       setTime(parseTime(val));
     }
+  };
+
+  const createSession = async () => {
+    try {
+      const response = await api.post("/sessions", { name: "Focus" });
+      setSession(response.data);
+    } catch (err) {
+      console.error("Failed to create session", err);
+    }
+  };
+
+  const updateSession = async () => {
+    try {
+      if (session) {
+        await api.patch(`/sessions/${session.id}`);
+      }
+    } catch (err) {
+      console.error("Failed to update session", err);
+    }
+  };
+
+  const handleTimerToggle = () => {
+    if (isActive) {
+      updateSession();
+    } else {
+      createSession();
+    }
+
+    setIsActive((prev) => !prev);
   };
 
   return (
@@ -83,7 +113,7 @@ const Hourglass = () => {
         <ActionButton
           label={isActive ? "Stop" : "Start"}
           variant="primary"
-          onClick={() => setIsActive((prev) => !prev)}
+          onClick={() => handleTimerToggle()}
         />
 
         <div className="flex gap-4">
