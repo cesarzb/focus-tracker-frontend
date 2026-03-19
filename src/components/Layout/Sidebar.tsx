@@ -7,9 +7,11 @@ import {
   LogOut,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { logout } = useAuth();
 
   const { pathname: currentPath } = useLocation();
   const menuItems = [
@@ -70,7 +72,12 @@ const Sidebar = () => {
       </nav>
 
       <div className="p-4 border-t border-stone-800/50">
-        <button className="flex items-center w-full p-3 rounded-xl text-stone-500 hover:bg-red-500/10 hover:text-red-500 transition-all">
+        <button
+          className="flex items-center w-full p-3 rounded-xl text-stone-500 hover:bg-red-500/10 hover:text-red-500 transition-all cursor-pointer"
+          onClick={() => {
+            logout();
+          }}
+        >
           <LogOut size={22} />
           {!isCollapsed && (
             <span className="ml-4 font-semibold text-sm">Logout</span>
