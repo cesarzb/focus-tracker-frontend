@@ -79,6 +79,7 @@ const Timer = () => {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center">
       <Hourglass time={time} fullPomodoroLength={fullPomodoroLength} />
+
       <input
         type="text"
         className="text-stone-50 m-4 text-6xl font-black bg-transparent border-none outline-none focus:ring-0 p-0 text-center w-full"

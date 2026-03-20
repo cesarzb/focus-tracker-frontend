@@ -1,21 +1,35 @@
-import { Link } from "react-router-dom";
-// import hourglass from "./assets/hourglass.png";
+import { useNavigate } from "react-router-dom";
+import Hourglass from "./components/Timer/Hourglass";
+import ActionButton from "./components/ui/ActionButton/ActionButton";
 
 function App() {
-  return (
-    <div className="flex flex-col justify-around h-full">
-      <div className="text-5xl font-bold text-white">
-        Welcome to Focus Tracker
-      </div>
-      {/* <img src={hourglass} alt="Hourglass" /> */}
+  const navigate = useNavigate();
 
-      <div className="flex flex-row justify-center gap-10 text-white">
-        <Link to="/login" className="cursor-pointer">
-          Login
-        </Link>
-        <Link to="/register" className="cursor-pointer">
-          Register
-        </Link>
+  const handleClick = (path: string) => {
+    navigate(path);
+  };
+
+  return (
+    <div className="flex flex-col justify-around items-center h-full">
+      <Hourglass time={5 * 60} fullPomodoroLength={25 * 60} />
+
+      <div className="flex gap-4 text-white">
+        <ActionButton
+          label="Login"
+          className="w-36"
+          variant="primary"
+          onClick={() => {
+            handleClick("/login");
+          }}
+        />
+        <ActionButton
+          label="Register"
+          className="w-36"
+          variant="secondary"
+          onClick={() => {
+            handleClick("/register");
+          }}
+        />
       </div>
     </div>
   );
