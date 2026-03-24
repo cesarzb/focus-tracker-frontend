@@ -56,10 +56,10 @@ const Timer = () => {
     }
   };
 
-  const updateSession = async () => {
+  const stopSession = async () => {
     try {
       if (session) {
-        await api.patch(`/sessions/${session.id}`);
+        await api.patch(`/sessions/${session.id}/stop`);
       }
     } catch (err) {
       console.error("Failed to update session", err);
@@ -68,7 +68,7 @@ const Timer = () => {
 
   const handleTimerToggle = () => {
     if (isActive) {
-      updateSession();
+      stopSession();
     } else {
       createSession();
     }
