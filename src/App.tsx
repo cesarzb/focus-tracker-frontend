@@ -3,10 +3,8 @@ import Hourglass from "./components/Timer/Hourglass";
 import ActionButton from "./components/ui/ActionButton/ActionButton";
 
 function App() {
-  const navigate = useNavigate();
-
   const handleClick = (path: string) => {
-    navigate(path);
+    console.log("Navigate to path");
   };
 
   return (
