@@ -1,6 +1,6 @@
 interface ActionButtonProps {
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
   variant?: "primary" | "secondary" | "danger";
   className?: string;
 }
