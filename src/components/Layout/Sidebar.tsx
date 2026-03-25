@@ -6,14 +6,15 @@ import {
   ChevronRight,
   LogOut,
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { logout } = useAuth();
 
-  const { pathname: currentPath } = useLocation();
+  const currentPath = usePathname();
   const menuItems = [
     {
       icon: LayoutDashboard,
@@ -49,7 +50,7 @@ const Sidebar = () => {
       <nav className="flex-1 px-3 space-y-1.5 mt-4">
         {menuItems.map((item) => (
           <Link
-            to={item.path}
+            href={item.path}
             key={item.label}
             className={`w-full flex items-center p-3 rounded-xl transition-all group
               ${

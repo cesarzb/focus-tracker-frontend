@@ -1,10 +1,19 @@
-import { useState, type ReactNode } from "react";
+"use client";
+
+import { useState, useEffect, type ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("token"),
-  );
+  const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem("token");
+    if (savedToken) {
+      setToken(savedToken);
+    }
+    setIsLoading(false);
+  }, []);
 
   const login = (newToken: string) => {
     localStorage.setItem("token", newToken);
@@ -17,7 +26,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, login, logout }}>
+    <AuthContext.Provider value={{ token, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

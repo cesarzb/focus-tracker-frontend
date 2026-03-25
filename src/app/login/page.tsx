@@ -1,16 +1,30 @@
-import { Link } from "react-router-dom";
-import api from "../../api/client";
-import type { RegisterDto } from "./dtos/RegisterDto";
-import { useState } from "react";
+"use client";
 
-const Register = () => {
-  const handleRegister = async (e: React.MouseEvent<HTMLButtonElement>) => {
+import { useState } from "react";
+import type { LoginDto } from "./dtos/LoginDto";
+import api from "@/api/client";
+import { useAuth } from "@/hooks/useAuth";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+const Login = () => {
+  const { login } = useAuth();
+  const router = useRouter();
+
+  const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const response = await api.post("/users/", formData);
-    return response.data;
+    try {
+      const response = await api.post("/auth/login", formData);
+
+      login(response.data.access_token);
+
+      router.push("/dashboard");
+    } catch (err) {
+      console.error("Login failed", err);
+    }
   };
 
-  const [formData, setFormData] = useState<RegisterDto>({
+  const [formData, setFormData] = useState<LoginDto>({
     username: "",
     password: "",
   });
@@ -29,9 +43,11 @@ const Register = () => {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-extrabold tracking-tight text-stone-50">
-            Create Account
+            Welcome Back
           </h1>
-          <p className="mt-2 text-stone-400">Join the sessions app today.</p>
+          <p className="mt-2 text-stone-400">
+            Please enter your details to sign in.
+          </p>
         </div>
 
         <div className="rounded-2xl border border-stone-800 bg-stone-800/40 p-8 shadow-2xl backdrop-blur-sm">
@@ -51,9 +67,11 @@ const Register = () => {
             </div>
 
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-stone-300">
-                Password
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-sm font-medium text-stone-300">
+                  Password
+                </label>
+              </div>
               <input
                 type="password"
                 placeholder="••••••••"
@@ -66,21 +84,21 @@ const Register = () => {
 
             <button
               className="cursor-pointer group relative flex w-full items-center justify-center rounded-xl bg-orange-600 py-3 px-4 text-sm font-bold text-white transition-all hover:bg-orange-500 active:scale-[0.98]"
-              onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-                handleRegister(e)
-              }
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+                handleLogin(e);
+              }}
             >
-              Register
+              Sign In
             </button>
           </form>
 
           <p className="mt-8 text-center text-sm text-stone-500">
-            Already have an account?
+            Don't have an account?
             <Link
-              to="/login"
+              href="/register"
               className="ml-1 font-semibold text-stone-300 hover:text-orange-500 transition-colors"
             >
-              Log in
+              Create account
             </Link>
           </p>
         </div>
@@ -89,4 +107,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;
