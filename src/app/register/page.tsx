@@ -1,4 +1,6 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
 import api from "../../api/client";
 import type { RegisterDto } from "./dtos/RegisterDto";
 import { useState } from "react";
@@ -77,7 +79,7 @@ const Register = () => {
           <p className="mt-8 text-center text-sm text-stone-500">
             Already have an account?
             <Link
-              to="/login"
+              href="/login"
               className="ml-1 font-semibold text-stone-300 hover:text-orange-500 transition-colors"
             >
               Log in

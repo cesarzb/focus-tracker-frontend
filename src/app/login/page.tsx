@@ -1,12 +1,13 @@
+"use client";
+
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import type { LoginDto } from "./dtos/LoginDto";
 import api from "../../api/client";
 import { useAuth } from "../../hooks/useAuth";
+import Link from "next/link";
 
 const Login = () => {
   const { login } = useAuth();
-  const navigate = useNavigate();
 
   const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -92,7 +93,7 @@ const Login = () => {
           <p className="mt-8 text-center text-sm text-stone-500">
             Don't have an account?
             <Link
-              to="/register"
+              href="/register"
               className="ml-1 font-semibold text-stone-300 hover:text-orange-500 transition-colors"
             >
               Create account

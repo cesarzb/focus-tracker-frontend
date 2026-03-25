@@ -1,7 +1,9 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import api from "../../api/client";
-import type { Session } from "../../types/session";
-import SessionCard from "./SessionCard.tsx";
+import api from "@/api/client";
+import type { Session } from "@/types/session";
+import SessionCard from "@/components/Dashboard/SessionCard";
 
 const Dashboard = () => {
   const [sessions, setSessions] = useState<Session[]>([]);

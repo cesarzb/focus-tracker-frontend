@@ -1,8 +1,10 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import ActionButton from "../ui/ActionButton/ActionButton";
-import api from "../../api/client";
-import type { Session } from "../../types/session";
-import Hourglass from "./Hourglass.tsx";
+import ActionButton from "@/components/ui/ActionButton/ActionButton";
+import api from "@/api/client";
+import type { Session } from "@/types/session";
+import Hourglass from "@/components/Timer/Hourglass";
 
 const Timer = () => {
   const fullPomodoroLength = 25 * 60;

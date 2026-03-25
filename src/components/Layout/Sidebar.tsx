@@ -6,14 +6,13 @@ import {
   ChevronRight,
   LogOut,
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { logout } = useAuth();
 
-  const { pathname: currentPath } = useLocation();
+  // const { pathname: currentPath } = useLocation();
   const menuItems = [
     {
       icon: LayoutDashboard,

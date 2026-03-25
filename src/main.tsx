@@ -1,15 +1,15 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App.tsx";
+import App from "./app/page.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Register from "./components/Register/Register.tsx";
-import Login from "./components/Login/Login.tsx";
+import Register from "./app/register/page.tsx";
+import Login from "./app/login/page.tsx";
 import { AuthProvider } from "./context/AuthProvider.tsx";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.tsx";
-import Dashboard from "./components/Dashboard/Dashboard.tsx";
-import Layout from "./components/Layout/Layout.tsx";
-import Timer from "./components/Timer/Timer.tsx";
+import Dashboard from "./app/(dashboard)/dashboard/page.tsx";
+import Layout from "./app/(dashboard)/layout.tsx";
+import Timer from "./app/timer/page.tsx";
 
 const router = createBrowserRouter([
   {
