@@ -4,14 +4,28 @@ import Link from "next/link";
 import api from "../../api/client";
 import type { RegisterDto } from "./dtos/RegisterDto";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 
 const Register = () => {
+  const { login } = useAuth();
+  const router = useRouter();
+
   const handleRegister = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    const response = await api.post("/users/", formData);
-    return response.data;
-  };
 
+    try {
+      await api.post("/users/", formData);
+
+      const response = await api.post("/auth/login", formData);
+
+      login(response.data.access_token);
+
+      router.push("/dashboard");
+    } catch (err) {
+      console.error("Registration failed", err);
+    }
+  };
   const [formData, setFormData] = useState<RegisterDto>({
     username: "",
     password: "",
