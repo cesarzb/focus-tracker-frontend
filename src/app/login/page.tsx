@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import type { LoginDto } from "./dtos/LoginDto";
-import api from "../../api/client";
-import { useAuth } from "../../hooks/useAuth";
+import api from "@/api/client";
+import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
   const { login } = useAuth();
+  const router = useRouter();
 
   const handleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -16,7 +18,7 @@ const Login = () => {
 
       login(response.data.access_token);
 
-      navigate("/dashboard");
+      router.push("/dashboard");
     } catch (err) {
       console.error("Login failed", err);
     }
