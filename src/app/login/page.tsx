@@ -26,9 +26,7 @@ const Login = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name as keyof typeof errors]) {
-      setErrors((prev) => ({ ...prev, [name]: undefined, server: undefined }));
-    }
+    setErrors((prev) => ({ ...prev, [name]: undefined, server: undefined }));
   };
 
   const handleLogin = async (e: React.SyntheticEvent<HTMLFormElement>) => {
