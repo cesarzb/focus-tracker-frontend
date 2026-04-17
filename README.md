@@ -30,20 +30,20 @@ The frontend client for the Focus Tracker application, built with React and Next
 ### Installation
 
 1. Clone the repository:
-   git clone https://github.com/cesarzb/focus-tracker-frontend.git
-   cd focus-tracker-frontend
+   `git clone https://github.com/cesarzb/focus-tracker-frontend.git`
+   `cd focus-tracker-frontend`
 
 2. Install dependencies:
-   npm install
+   `npm install`
 
 3. Set up environment variables:
    Create a .env.local file in the root directory and add your API URL:
-   NEXT_PUBLIC_API_URL=http://localhost:3000
+   `NEXT_PUBLIC_API_URL=http://localhost:3000`
 
 4. Run the development server:
-   npm run dev
+   `npm run dev`
 
-5. Open http://localhost:3000 with your browser to see the result.
+5. Open `http://localhost:4000` with your browser to see the result.
 
 ## 📁 Project Structure Highlights
 
