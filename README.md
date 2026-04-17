@@ -1,73 +1,53 @@
-# React + TypeScript + Vite
+# Focus Tracker - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The frontend client for the Focus Tracker application, built with React and Next.js. This application features a custom authentication flow, dynamic SVG/CSS components (like the Pomodoro hourglass), and a fully responsive UI styled with Tailwind CSS.
 
-Currently, two official plugins are available:
+🌍 **Live Demo:** [https://focus-tracker-frontend-six.vercel.app/](https://focus-tracker-frontend-six.vercel.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+> ⚠️ **Note on Performance:** The backend server is currently hosted on a free tier. Your very first register or login attempt may take up to **1 minute** to process while the server "warms up" from sleep mode. All subsequent requests will be fast!
 
-## React Compiler
+## 🚀 Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework:** Next.js (App Router)
+- **Library:** React
+- **Styling:** Tailwind CSS
+- **Icons:** Lucide React
+- **HTTP Client:** Axios
 
-## Expanding the ESLint configuration
+## ✨ Key Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Authentication:** Custom JWT-based login and registration flows with robust error handling.
+- **Session Management:** Secure token storage and global Axios interceptors to handle session expiration (401 Unauthorized) gracefully.
+- **Interactive UI:** Custom-built components, including a visually dynamic CSS-driven Hourglass timer built to handle edge-case rendering quirks.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📦 Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Prerequisites
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Node.js (v18 or higher recommended)
+- npm or yarn
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Installation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Clone the repository:
+   git clone https://github.com/cesarzb/focus-tracker-frontend.git
+   cd focus-tracker-frontend
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2. Install dependencies:
+   npm install
+
+3. Set up environment variables:
+   Create a .env.local file in the root directory and add your API URL:
+   NEXT_PUBLIC_API_URL=http://localhost:3000
+
+4. Run the development server:
+   npm run dev
+
+5. Open http://localhost:3000 with your browser to see the result.
+
+## 📁 Project Structure Highlights
+
+- `/src/app` - Next.js App Router pages (login, register, dashboard).
+- `/src/components` - Reusable UI components (e.g., Hourglass.tsx).
+- `/src/api` - Axios client configuration and global interceptors.
+- `/src/hooks` - Custom React hooks (e.g., useAuth).
