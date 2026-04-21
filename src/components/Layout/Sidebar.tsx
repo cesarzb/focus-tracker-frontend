@@ -5,6 +5,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  Target,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import Link from "next/link";
@@ -25,6 +26,11 @@ const Sidebar = () => {
       icon: Hourglass,
       path: "/timer",
       label: "Focus Session",
+    },
+    {
+      icon: Target,
+      path: "/tasks",
+      label: "Tasks",
     },
   ];
 
