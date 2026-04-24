@@ -1,4 +1,4 @@
-import type { Task } from "../../types/task";
+import type { Task } from "@/types/task";
 import { Trash } from "lucide-react";
 
 interface taskCardProps {
