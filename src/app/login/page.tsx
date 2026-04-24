@@ -45,7 +45,7 @@ const Login = () => {
     try {
       const response = await api.post("/auth/login", formData);
       login(response.data.access_token);
-      router.push("/dashboard");
+      router.push("/sessions");
     } catch (err: any) {
       const message = err.response?.data?.message || "Something went wrong";
       setErrors({ server: Array.isArray(message) ? message[0] : message });

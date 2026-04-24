@@ -18,15 +18,16 @@ const Sidebar = () => {
   const currentPath = usePathname();
   const menuItems = [
     {
-      icon: LayoutDashboard,
-      path: "/dashboard",
-      label: "Dashboard",
-    },
-    {
       icon: Hourglass,
       path: "/timer",
-      label: "Focus Session",
+      label: "Focus",
     },
+    {
+      icon: LayoutDashboard,
+      path: "/sessions",
+      label: "Sessions",
+    },
+
     {
       icon: Target,
       path: "/tasks",
