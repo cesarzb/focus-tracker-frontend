@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import api from "@/api/client";
 import type { Task } from "@/types/task";
 import TaskCard from "@/components/Tasks/TaskCard";
-import CreateTaskModal from "@/components/Tasks/CreateTaskModal";
+import TaskFormModal from "@/components/Tasks/TaskFormModal";
 import { Plus } from "lucide-react";
 
 const Tasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -26,15 +28,33 @@ const Tasks = () => {
   const deleteTask = (taskId: number) => {
     try {
       api.delete(`/tasks/${taskId}`).then(() => {
-        setTasks((prev) => prev.filter((task) => task.id != taskId));
+        setTasks((prev) => prev.filter((task) => task.id !== taskId));
       });
     } catch (err) {
       console.error(`Failed to delete task #${taskId}`, err);
     }
   };
 
-  const handleTaskCreated = (newTask: Task) => {
-    setTasks((prev) => [newTask, ...prev]);
+  const handleOpenCreate = () => {
+    setTaskToEdit(null); // Ensure form is empty
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEdit = (task: Task) => {
+    setTaskToEdit(task); // Pass the specific task to the form
+    setIsModalOpen(true);
+  };
+
+  const handleTaskSaved = (savedTask: Task) => {
+    setTasks((prev) => {
+      const isExistingTask = prev.some((t) => t.id === savedTask.id);
+
+      if (isExistingTask) {
+        return prev.map((t) => (t.id === savedTask.id ? savedTask : t));
+      } else {
+        return [savedTask, ...prev];
+      }
+    });
   };
 
   return (
@@ -44,7 +64,7 @@ const Tasks = () => {
           Focus Tasks
         </h2>
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={handleOpenCreate}
           className="flex cursor-pointer items-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-bold text-white transition-all hover:bg-orange-500 active:scale-[0.98]"
         >
           <Plus size={18} />
@@ -55,7 +75,12 @@ const Tasks = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {tasks.length > 0 ? (
           tasks.map((task: Task) => (
-            <TaskCard key={task.id} task={task} deleteTask={deleteTask} />
+            <TaskCard
+              key={task.id}
+              task={task}
+              deleteTask={deleteTask}
+              onEdit={handleOpenEdit}
+            />
           ))
         ) : (
           <div className="col-span-full rounded-2xl border border-stone-800 bg-stone-800/40 p-8 text-center text-stone-400 backdrop-blur-sm">
@@ -64,10 +89,11 @@ const Tasks = () => {
         )}
       </div>
 
-      <CreateTaskModal
+      <TaskFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onTaskCreated={handleTaskCreated}
+        taskToEdit={taskToEdit}
+        onTaskSaved={handleTaskSaved}
       />
     </div>
   );

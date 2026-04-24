@@ -1,19 +1,21 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2, X } from "lucide-react";
 import api from "@/api/client";
 import type { Task } from "@/types/task";
 
-interface CreateTaskModalProps {
+interface TaskFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onTaskCreated: (task: Task) => void;
+  onTaskSaved: (task: Task) => void;
+  taskToEdit?: Task | null;
 }
 
-const CreateTaskModal = ({
+const TaskFormModal = ({
   isOpen,
   onClose,
-  onTaskCreated,
-}: CreateTaskModalProps) => {
+  onTaskSaved,
+  taskToEdit,
+}: TaskFormModalProps) => {
   const [formData, setFormData] = useState({
     name: "",
     emoji: "📝",
@@ -23,6 +25,35 @@ const CreateTaskModal = ({
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen && taskToEdit) {
+      let date = "";
+      let time = "";
+
+      if (taskToEdit.deadline) {
+        const d = new Date(taskToEdit.deadline);
+        date = d.toISOString().split("T")[0];
+        time = d.toISOString().split("T")[1].substring(0, 5);
+      }
+
+      setFormData({
+        name: taskToEdit.name,
+        emoji: taskToEdit.emoji || "📝",
+        description: taskToEdit.description || "",
+        deadlineDate: date,
+        deadlineTime: time,
+      });
+    } else if (isOpen && !taskToEdit) {
+      setFormData({
+        name: "",
+        emoji: "📝",
+        description: "",
+        deadlineDate: "",
+        deadlineTime: "",
+      });
+    }
+  }, [isOpen, taskToEdit]);
 
   if (!isOpen) return null;
 
@@ -58,19 +89,21 @@ const CreateTaskModal = ({
         deadline: finalDeadline,
       };
 
-      const response = await api.post("/tasks", payload);
-      onTaskCreated(response.data);
+      let response;
 
-      setFormData({
-        name: "",
-        emoji: "📝",
-        description: "",
-        deadlineDate: "",
-        deadlineTime: "",
-      });
+      if (taskToEdit) {
+        response = await api.patch(`/tasks/${taskToEdit.id}`, payload);
+      } else {
+        response = await api.post("/tasks", payload);
+      }
+
+      onTaskSaved(response.data);
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to create task");
+      setError(
+        err.response?.data?.message ||
+          `Failed to ${taskToEdit ? "update" : "create"} task`,
+      );
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +114,7 @@ const CreateTaskModal = ({
       <div className="w-full max-w-md rounded-2xl border border-stone-800 bg-stone-900 p-8 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-extrabold tracking-tight text-stone-50">
-            Create Task
+            {taskToEdit ? "Edit Task" : "Create Task"}
           </h2>
           <button
             onClick={onClose}
@@ -163,7 +196,7 @@ const CreateTaskModal = ({
                 value={formData.deadlineTime}
                 onChange={handleChange}
                 disabled={!formData.deadlineDate}
-                className="w-full rounded-xl border border-stone-700/50 bg-stone-950 p-3 text-stone-50 outline-none transition-all focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10 [color-scheme:dark] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full rounded-xl border border-stone-700/50 bg-stone-950 p-3 text-stone-50 outline-none transition-all focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10 [color-scheme:dark] disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
           </div>
@@ -184,6 +217,8 @@ const CreateTaskModal = ({
             >
               {isLoading ? (
                 <Loader2 className="animate-spin" size={18} />
+              ) : taskToEdit ? (
+                "Save Changes"
               ) : (
                 "Create Task"
               )}
@@ -195,4 +230,4 @@ const CreateTaskModal = ({
   );
 };
 
-export default CreateTaskModal;
+export default TaskFormModal;
