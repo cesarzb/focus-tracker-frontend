@@ -18,7 +18,7 @@ const Hourglass = ({
         ></div>
       </div>
 
-      <div className="w-50 h-40 rounded-t-full border-8 border-white box-border overflow-hidden flex items-end">
+      <div className="w-48 h-40 rounded-t-full border-8 border-white box-border overflow-hidden flex items-end">
         <div
           className="z-2 w-full bg-orange-500"
           id="bottom-sand"
