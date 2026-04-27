@@ -1,6 +1,5 @@
 import { useState } from "react";
 import {
-  LayoutDashboard,
   Hourglass,
   ChevronLeft,
   ChevronRight,
@@ -19,11 +18,6 @@ const Sidebar = () => {
   const menuItems = [
     {
       icon: Hourglass,
-      path: "/timer",
-      label: "Focus",
-    },
-    {
-      icon: LayoutDashboard,
       path: "/sessions",
       label: "Sessions",
     },
