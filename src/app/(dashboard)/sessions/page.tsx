@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import {
   addDays,
   subDays,
@@ -21,31 +21,61 @@ const Sessions = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
   const [period, setPeriod] = useState("all");
   const [referenceDate, setReferenceDate] = useState(new Date());
+
+  // Pagination States
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sessionToEdit, setSessionToEdit] = useState<Session | null>(null);
 
-  const fetchSessions = useCallback(async () => {
-    try {
-      const response = await api.get("/sessions", {
-        params: {
-          periodType: period,
-          selectedDate:
-            period !== "all" ? referenceDate.toISOString() : undefined,
-        },
-      });
-      setSessions(response.data);
-    } catch (err) {
-      console.error(err);
-    }
-  }, [period, referenceDate]);
+  const fetchSessions = useCallback(
+    async (targetPage: number, append: boolean = false) => {
+      setIsLoading(true);
+      try {
+        const response = await api.get("/sessions", {
+          params: {
+            periodType: period,
+            selectedDate:
+              period !== "all" ? referenceDate.toISOString() : undefined,
+            page: targetPage,
+          },
+        });
 
+        const newSessions = response.data;
+
+        if (append) {
+          setSessions((prev) => [...prev, ...newSessions]);
+        } else {
+          setSessions(newSessions);
+        }
+
+        // If we got fewer than 12 items, we reached the end
+        setHasMore(newSessions.length === 12);
+      } catch (err) {
+        console.error("Failed to fetch sessions:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [period, referenceDate],
+  );
+
+  // Reset and fetch when filters change
   useEffect(() => {
-    fetchSessions();
-  }, [fetchSessions]);
+    setPage(0);
+    fetchSessions(0, false);
+  }, [period, referenceDate, fetchSessions]);
+
+  const handleLoadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchSessions(nextPage, true);
+  };
 
   const handleNavigate = (direction: "prev" | "next") => {
     const isNext = direction === "next";
-
     switch (period) {
       case "day":
         setReferenceDate((prev) =>
@@ -65,39 +95,21 @@ const Sessions = () => {
     }
   };
 
-  const handleOpenCreate = () => {
-    setSessionToEdit(null);
-    setIsModalOpen(true);
-  };
-
   const handleOpenEdit = (session: Session) => {
     setSessionToEdit(session);
     setIsModalOpen(true);
   };
 
-  const handleSessionSaved = (savedSession: Session) => {
-    setSessions((prev) => {
-      const exists = prev.some((s) => s.id === savedSession.id);
-      return exists
-        ? prev.map((s) => (s.id === savedSession.id ? savedSession : s))
-        : [savedSession, ...prev];
-    });
-    // Optional: Re-fetch if the saved session might fall outside current view
-    fetchSessions();
+  const handleSessionSaved = () => {
+    // Refresh the view from scratch to ensure correct order/pagination
+    setPage(0);
+    fetchSessions(0, false);
   };
 
   const deleteSession = (id: number) => {
     api.delete(`/sessions/${id}`).then(() => {
       setSessions((prev) => prev.filter((s) => s.id !== id));
     });
-  };
-
-  const renderDateLabel = () => {
-    if (period === "all") return "All Time";
-    if (period === "day") return format(referenceDate, "MMMM d, yyyy");
-    if (period === "week") return `Week of ${format(referenceDate, "MMM d")}`;
-    if (period === "month") return format(referenceDate, "MMMM yyyy");
-    return "";
   };
 
   return (
@@ -125,7 +137,10 @@ const Sessions = () => {
                   </button>
                 </div>
                 <span className="text-sm font-medium tracking-wide">
-                  {renderDateLabel()}
+                  {period === "day" && format(referenceDate, "MMMM d, yyyy")}
+                  {period === "week" &&
+                    `Week of ${format(referenceDate, "MMM d")}`}
+                  {period === "month" && format(referenceDate, "MMMM yyyy")}
                 </span>
               </>
             )}
@@ -134,7 +149,10 @@ const Sessions = () => {
 
         <div className="flex items-center gap-4">
           <button
-            onClick={handleOpenCreate}
+            onClick={() => {
+              setSessionToEdit(null);
+              setIsModalOpen(true);
+            }}
             className="flex items-center gap-2 rounded-xl bg-orange-600 px-4 py-2.5 text-sm font-bold text-white transition-all hover:bg-orange-500 active:scale-[0.98]"
           >
             <Plus size={18} /> New Session
@@ -144,19 +162,36 @@ const Sessions = () => {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {sessions.length > 0 ? (
-          sessions.map((session) => (
-            <SessionCard
-              key={session.id}
-              session={session}
-              deleteSession={deleteSession}
-              onEdit={handleOpenEdit}
-            />
-          ))
-        ) : (
-          <div className="col-span-full rounded-2xl border border-stone-800 bg-stone-800/40 p-12 text-center text-stone-400 backdrop-blur-sm">
-            No sessions found for this {period}.
-          </div>
+        {sessions.map((session) => (
+          <SessionCard
+            key={session.id}
+            session={session}
+            deleteSession={deleteSession}
+            onEdit={handleOpenEdit}
+          />
+        ))}
+      </div>
+
+      {sessions.length === 0 && !isLoading && (
+        <div className="rounded-2xl border border-stone-800 bg-stone-800/40 p-12 text-center text-stone-400 backdrop-blur-sm">
+          No sessions found for this {period}.
+        </div>
+      )}
+
+      {/* Load More Section */}
+      <div className="mt-12 flex justify-center">
+        {hasMore && sessions.length > 0 && (
+          <button
+            onClick={handleLoadMore}
+            disabled={isLoading}
+            className="flex items-center gap-2 rounded-xl border border-stone-800 bg-stone-800/40 px-8 py-3 text-sm font-bold text-stone-300 transition-all hover:border-stone-700 hover:text-stone-100 disabled:opacity-50"
+          >
+            {isLoading ? (
+              <Loader2 className="animate-spin" size={18} />
+            ) : (
+              "Load More Sessions"
+            )}
+          </button>
         )}
       </div>
 
