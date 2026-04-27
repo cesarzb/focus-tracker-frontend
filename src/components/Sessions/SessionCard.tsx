@@ -1,15 +1,24 @@
+"use client";
+
+import { MouseEvent } from "react";
 import type { Session } from "../../types/session";
-import { Trash, PlayCircle, StopCircle, Activity } from "lucide-react";
+import { Trash, Pencil, PlayCircle, StopCircle, Activity } from "lucide-react";
 
 interface SessionCardProps {
   session: Session;
   deleteSession: (sessionId: number) => void;
+  onEdit: (session: Session) => void;
 }
 
-const SessionCard = ({ session, deleteSession }: SessionCardProps) => {
-  const handleDelete = (e: React.MouseEvent) => {
+const SessionCard = ({ session, deleteSession, onEdit }: SessionCardProps) => {
+  const handleDelete = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     deleteSession(session.id);
+  };
+
+  const handleEdit = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    onEdit(session);
   };
 
   return (
@@ -20,7 +29,14 @@ const SessionCard = ({ session, deleteSession }: SessionCardProps) => {
           {session.name}
         </h3>
 
-        <div className="flex shrink-0 items-center opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
+        <div className="flex shrink-0 items-center gap-1 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
+          <button
+            onClick={handleEdit}
+            className="cursor-pointer rounded-lg p-2 text-stone-400 transition-colors hover:bg-orange-500/10 hover:text-orange-400"
+            aria-label="Edit session"
+          >
+            <Pencil size={16} />
+          </button>
           <button
             onClick={handleDelete}
             className="cursor-pointer rounded-lg p-2 text-stone-400 transition-colors hover:bg-red-500/10 hover:text-red-400"

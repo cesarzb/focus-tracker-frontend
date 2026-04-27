@@ -1,7 +1,12 @@
-import { useState, useEffect } from "react";
-import { Loader2, X } from "lucide-react";
+"use client";
+
+import { useState, useEffect, SyntheticEvent } from "react";
+import { Loader2 } from "lucide-react";
 import api from "@/api/client";
 import type { Task } from "@/types/task";
+import ModalLayout from "@/components/ui/Modal/ModalLayout";
+import FormInput from "@/components/ui/Form/FormInput";
+import FormTextArea from "@/components/ui/Form/FormTextArea";
 
 interface TaskFormModalProps {
   isOpen: boolean;
@@ -24,27 +29,18 @@ const TaskFormModal = ({
     deadlineTime: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen && taskToEdit) {
-      let date = "";
-      let time = "";
-
-      if (taskToEdit.deadline) {
-        const d = new Date(taskToEdit.deadline);
-        date = d.toISOString().split("T")[0];
-        time = d.toISOString().split("T")[1].substring(0, 5);
-      }
-
+      const d = taskToEdit.deadline ? new Date(taskToEdit.deadline) : null;
       setFormData({
         name: taskToEdit.name,
         emoji: taskToEdit.emoji || "📝",
         description: taskToEdit.description || "",
-        deadlineDate: date,
-        deadlineTime: time,
+        deadlineDate: d ? d.toISOString().split("T")[0] : "",
+        deadlineTime: d ? d.toTimeString().substring(0, 5) : "",
       });
-    } else if (isOpen && !taskToEdit) {
+    } else if (isOpen) {
       setFormData({
         name: "",
         emoji: "📝",
@@ -55,178 +51,107 @@ const TaskFormModal = ({
     }
   }, [isOpen, taskToEdit]);
 
-  if (!isOpen) return null;
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (error) setError(null);
-  };
-
-  const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!formData.name) {
-      setError("Task name is required");
-      return;
-    }
-
     setIsLoading(true);
     try {
-      let finalDeadline = null;
-      if (formData.deadlineDate) {
-        const timeString = formData.deadlineTime || "23:59";
-        finalDeadline = new Date(
-          `${formData.deadlineDate}T${timeString}`,
-        ).toISOString();
-      }
+      const deadline = formData.deadlineDate
+        ? new Date(
+            `${formData.deadlineDate}T${formData.deadlineTime || "23:59"}`,
+          ).toISOString()
+        : null;
 
-      const payload = {
-        name: formData.name,
-        emoji: formData.emoji,
-        description: formData.description,
-        deadline: finalDeadline,
-      };
+      const payload = { ...formData, deadline };
+      const res = taskToEdit
+        ? await api.patch(`/tasks/${taskToEdit.id}`, payload)
+        : await api.post("/tasks", payload);
 
-      let response;
-
-      if (taskToEdit) {
-        response = await api.patch(`/tasks/${taskToEdit.id}`, payload);
-      } else {
-        response = await api.post("/tasks", payload);
-      }
-
-      onTaskSaved(response.data);
+      onTaskSaved(res.data);
       onClose();
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message ||
-          `Failed to ${taskToEdit ? "update" : "create"} task`,
-      );
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm transition-opacity">
-      <div className="w-full max-w-md rounded-2xl border border-stone-800 bg-stone-900 p-8 shadow-2xl">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-extrabold tracking-tight text-stone-50">
-            {taskToEdit ? "Edit Task" : "Create Task"}
-          </h2>
+    <ModalLayout
+      isOpen={isOpen}
+      onClose={onClose}
+      title={taskToEdit ? "Edit Task" : "Create Task"}
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="flex gap-4">
+          <FormInput
+            label="Emoji"
+            name="emoji"
+            value={formData.emoji}
+            className="text-center text-xl"
+            onChange={(e) =>
+              setFormData({ ...formData, emoji: e.target.value })
+            }
+          />
+          <FormInput
+            label="Task Name"
+            name="name"
+            value={formData.name}
+            placeholder="What's next?"
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
+        </div>
+        <FormTextArea
+          label="Description"
+          name="description"
+          value={formData.description}
+          rows={3}
+          onChange={(e) =>
+            setFormData({ ...formData, description: e.target.value })
+          }
+        />
+        <div className="flex gap-4">
+          <FormInput
+            label="Date"
+            type="date"
+            value={formData.deadlineDate}
+            onChange={(e) =>
+              setFormData({ ...formData, deadlineDate: e.target.value })
+            }
+          />
+          <FormInput
+            label="Time"
+            type="time"
+            value={formData.deadlineTime}
+            disabled={!formData.deadlineDate}
+            onChange={(e) =>
+              setFormData({ ...formData, deadlineTime: e.target.value })
+            }
+          />
+        </div>
+        <div className="mt-8 flex justify-end gap-3">
           <button
+            type="button"
             onClick={onClose}
-            className="rounded-full p-1 text-stone-400 transition-colors hover:bg-stone-800 hover:text-stone-200"
+            className="rounded-xl px-4 py-2 text-sm font-medium text-stone-300 hover:bg-stone-800"
           >
-            <X size={20} />
+            Cancel
+          </button>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="flex w-32 items-center justify-center rounded-xl bg-orange-600 py-2 text-sm font-bold text-white hover:bg-orange-500 active:scale-95 transition-all"
+          >
+            {isLoading ? (
+              <Loader2 className="animate-spin" size={18} />
+            ) : taskToEdit ? (
+              "Save Task"
+            ) : (
+              "Create Task"
+            )}
           </button>
         </div>
-
-        {error && (
-          <div className="mb-6 rounded-lg border border-red-500/50 bg-red-500/10 p-3 text-sm text-red-400">
-            {Array.isArray(error) ? error[0] : error}
-          </div>
-        )}
-
-        <form className="space-y-5" onSubmit={handleSubmit}>
-          <div className="flex gap-4">
-            <div className="w-20">
-              <label className="mb-1.5 block text-sm font-medium text-stone-300">
-                Emoji
-              </label>
-              <input
-                type="text"
-                name="emoji"
-                value={formData.emoji}
-                onChange={handleChange}
-                className="w-full rounded-xl border border-stone-700/50 bg-stone-950 p-3 text-center text-xl text-stone-50 outline-none transition-all focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="mb-1.5 block text-sm font-medium text-stone-300">
-                Task Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="What needs to be done?"
-                className="w-full rounded-xl border border-stone-700/50 bg-stone-950 p-3 text-stone-50 outline-none transition-all focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="mb-1.5 block text-sm font-medium text-stone-300">
-              Description (Optional)
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows={3}
-              placeholder="Add some details..."
-              className="w-full resize-none rounded-xl border border-stone-700/50 bg-stone-950 p-3 text-stone-50 outline-none transition-all focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10"
-            />
-          </div>
-
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <label className="mb-1.5 block text-sm font-medium text-stone-300">
-                Date (Optional)
-              </label>
-              <input
-                type="date"
-                name="deadlineDate"
-                value={formData.deadlineDate}
-                onChange={handleChange}
-                className="w-full rounded-xl border border-stone-700/50 bg-stone-950 p-3 text-stone-50 outline-none transition-all focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10 [color-scheme:dark]"
-              />
-            </div>
-            <div className="flex-1">
-              <label className="mb-1.5 block text-sm font-medium text-stone-300">
-                Time
-              </label>
-              <input
-                type="time"
-                name="deadlineTime"
-                value={formData.deadlineTime}
-                onChange={handleChange}
-                disabled={!formData.deadlineDate}
-                className="w-full rounded-xl border border-stone-700/50 bg-stone-950 p-3 text-stone-50 outline-none transition-all focus:border-orange-500/50 focus:ring-4 focus:ring-orange-500/10 [color-scheme:dark] disabled:cursor-not-allowed disabled:opacity-50"
-              />
-            </div>
-          </div>
-
-          <div className="mt-8 flex justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isLoading}
-              className="rounded-xl px-4 py-2 text-sm font-medium text-stone-300 transition-colors hover:bg-stone-800 hover:text-stone-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="group relative flex w-32 cursor-pointer items-center justify-center rounded-xl bg-orange-600 px-4 py-2 text-sm font-bold text-white transition-all hover:bg-orange-500 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {isLoading ? (
-                <Loader2 className="animate-spin" size={18} />
-              ) : taskToEdit ? (
-                "Save Changes"
-              ) : (
-                "Create Task"
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </ModalLayout>
   );
 };
 
